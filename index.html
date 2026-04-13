@@ -1,0 +1,794 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ByIt — The Next Generation of Commerce</title>
+<link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800;900&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  *,*::before,*::after{margin:0;padding:0;box-sizing:border-box}
+  :root{
+    --navy:#1B2A4A;
+    --navy-deep:#0f1a30;
+    --navy-dark:#0a1220;
+    --bg-deep:#020308;
+    --bg:#060b14;
+    --surface:#0d1525;
+    --surface-up:#111d33;
+    --border:rgba(62,214,192,0.08);
+    --border-subtle:rgba(255,255,255,0.04);
+    --teal:#3ED6C0;
+    --teal-dim:#2db8a3;
+    --teal-glow:rgba(62,214,192,0.12);
+    --text-primary:rgba(255,255,255,0.92);
+    --text-secondary:rgba(255,255,255,0.5);
+    --text-muted:rgba(255,255,255,0.25);
+  }
+
+  html{
+    scroll-behavior:smooth;font-size:16px;
+    min-height:100%;
+    background-color:var(--bg-deep);
+    background-image:
+      radial-gradient(ellipse 125% 90% at 50% -32%, rgba(62,214,192,0.14) 0%, transparent 54%),
+      radial-gradient(ellipse 75% 55% at 108% 5%, rgba(27,42,74,0.5) 0%, transparent 50%),
+      radial-gradient(ellipse 50% 42% at -5% 32%, rgba(62,214,192,0.07) 0%, transparent 52%),
+      radial-gradient(ellipse 95% 70% at 50% 108%, rgba(8,14,28,0.9) 0%, transparent 55%),
+      radial-gradient(ellipse 55% 38% at 82% 88%, rgba(62,214,192,0.05) 0%, transparent 48%),
+      linear-gradient(165deg, #0c1528 0%, #070d18 28%, var(--bg) 52%, #03050c 78%, var(--bg-deep) 100%),
+      linear-gradient(118deg, transparent 36%, rgba(255,255,255,0.018) 48%, transparent 62%);
+    background-attachment:fixed;
+    background-repeat:no-repeat;
+    background-size:100% 100%;
+  }
+  @media (max-width:900px),(prefers-reduced-motion:reduce){
+    html{background-attachment:scroll}
+  }
+
+  body{
+    background:transparent;
+    color:var(--text-primary);
+    font-family:'Outfit',sans-serif;
+    overflow-x:hidden;
+    -webkit-font-smoothing:antialiased;
+  }
+
+  /* vignette + fine grain (premium finish) */
+  body::after{
+    content:'';position:fixed;inset:0;z-index:9999;pointer-events:none;
+    background-image:
+      radial-gradient(ellipse 100% 88% at 50% 44%, transparent 32%, rgba(0,0,0,0.14) 68%, rgba(0,0,0,0.42) 100%),
+      url("data:image/svg+xml,%3Csvg viewBox='0 0 512 512' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.92' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.42'/%3E%3C/svg%3E");
+    background-size:100% 100%, 180px 180px;
+    opacity:0.48;
+  }
+
+  /* ===== NAV ===== */
+  nav{
+    position:fixed;top:0;left:0;right:0;z-index:100;
+    padding:20px 48px;
+    display:flex;align-items:center;justify-content:space-between;
+    background:linear-gradient(180deg, rgba(6,11,20,0.88) 0%, rgba(6,11,20,0.72) 100%);
+    backdrop-filter:blur(20px) saturate(1.15);-webkit-backdrop-filter:blur(20px) saturate(1.15);
+    border-bottom:1px solid rgba(255,255,255,0.06);
+    box-shadow:0 1px 0 rgba(62,214,192,0.04), 0 24px 48px rgba(0,0,0,0.25);
+  }
+  .nav-logo{
+    display:flex;align-items:center;
+    min-height:44px;
+  }
+  .nav-logo img{
+    display:block;
+    height:44px;width:44px;
+    object-fit:contain;
+    flex-shrink:0;
+    filter:drop-shadow(0 2px 12px rgba(62,214,192,0.12));
+  }
+  .nav-links{display:flex;gap:36px;align-items:center}
+  .nav-links a{
+    color:var(--text-secondary);text-decoration:none;
+    font-size:0.82rem;font-weight:400;letter-spacing:0.02em;
+    transition:color 0.3s;
+  }
+  .nav-links a:hover{color:var(--teal)}
+  .nav-cta{
+    padding:10px 24px;border-radius:8px;
+    background:var(--teal);color:var(--navy-dark);
+    font-weight:600;font-size:0.82rem;font-family:'Outfit',sans-serif;
+    border:none;cursor:pointer;
+    transition:all 0.3s;
+    letter-spacing:-0.01em;
+  }
+  .nav-cta:hover{background:#4ee8d0;transform:translateY(-1px)}
+
+  /* ===== TOP BANNER (wordmark — contain, not full-bleed crop) ===== */
+  .top-banner{
+    margin-top:74px;
+    width:100%;
+    padding:clamp(20px,4vw,40px) 24px clamp(24px,5vw,44px);
+    background:
+      radial-gradient(ellipse 90% 140% at 50% -20%, rgba(62,214,192,0.1) 0%, transparent 58%),
+      linear-gradient(180deg, rgba(14,24,42,0.95) 0%, rgba(8,14,26,0.55) 55%, transparent 100%);
+    border-bottom:1px solid rgba(255,255,255,0.05);
+    position:relative;
+  }
+  .top-banner::after{
+    content:'';
+    position:absolute;left:50%;bottom:0;transform:translateX(-50%);
+    width:min(520px,75%);height:1px;
+    background:linear-gradient(90deg, transparent, rgba(62,214,192,0.18), transparent);
+    pointer-events:none;
+  }
+  .top-banner-inner{
+    display:flex;align-items:center;justify-content:center;
+    min-height:clamp(56px,12vw,88px);
+  }
+  .top-banner img{
+    display:block;
+    width:auto;
+    max-width:min(680px,90vw);
+    height:auto;
+    max-height:clamp(56px,11vw,104px);
+    object-fit:contain;
+    object-position:center;
+    border-radius:14px;
+    box-shadow:0 12px 48px rgba(0,0,0,0.35), 0 0 0 1px rgba(255,255,255,0.04);
+  }
+
+  /* ===== HERO ===== */
+  .hero{
+    min-height:clamp(360px,52vh,780px);
+    display:flex;flex-direction:column;
+    align-items:center;justify-content:center;
+    text-align:center;position:relative;
+    padding:72px 24px 100px;
+    overflow:hidden;
+  }
+
+  /* ambient glow — softer, aligns with global mesh */
+  .hero::before{
+    content:'';position:absolute;
+    width:min(920px,110vw);height:min(680px,85vh);
+    top:-18%;left:-22%;
+    background:radial-gradient(ellipse,rgba(27,42,74,0.38) 0%,rgba(27,42,74,0.08) 45%,transparent 72%);
+    pointer-events:none;
+  }
+  .hero::after{
+    content:'';position:absolute;
+    width:min(560px,75vw);height:min(520px,65vh);
+    bottom:-12%;right:-12%;
+    background:radial-gradient(ellipse,rgba(62,214,192,0.09) 0%,rgba(62,214,192,0.02) 50%,transparent 70%);
+    pointer-events:none;
+  }
+
+  .hero-eyebrow{
+    display:inline-flex;align-items:center;gap:10px;
+    padding:8px 18px;
+    border:1px solid var(--border);
+    border-radius:100px;
+    font-size:0.72rem;font-weight:500;
+    color:var(--teal);
+    margin-bottom:48px;
+    background:rgba(62,214,192,0.04);
+    animation:fadeUp 0.8s ease-out both;
+    letter-spacing:0.06em;text-transform:uppercase;
+  }
+  .hero-eyebrow .dot{
+    width:5px;height:5px;border-radius:50%;
+    background:var(--teal);
+    animation:pulse-dot 2.5s ease-in-out infinite;
+  }
+  @keyframes pulse-dot{0%,100%{opacity:1}50%{opacity:0.3}}
+
+  .hero h1{
+    font-size:clamp(3rem,7.5vw,6rem);
+    font-weight:800;letter-spacing:-0.045em;
+    line-height:0.95;margin-bottom:28px;
+    animation:fadeUp 0.8s ease-out 0.12s both;
+    position:relative;z-index:2;
+  }
+  .hero h1 .line{display:block}
+  .hero h1 .em{color:var(--teal)}
+
+  .hero-sub{
+    font-size:clamp(1rem,1.8vw,1.2rem);
+    color:var(--text-secondary);
+    max-width:480px;line-height:1.75;
+    margin-bottom:52px;font-weight:300;
+    animation:fadeUp 0.8s ease-out 0.24s both;
+    position:relative;z-index:2;
+  }
+
+  .hero-actions{
+    display:flex;gap:14px;
+    animation:fadeUp 0.8s ease-out 0.36s both;
+    position:relative;z-index:2;
+  }
+  .btn-main{
+    padding:16px 40px;border:none;border-radius:10px;
+    font-family:'Outfit',sans-serif;font-weight:600;font-size:0.95rem;
+    cursor:pointer;letter-spacing:-0.01em;
+    background:var(--teal);color:var(--navy-dark);
+    transition:all 0.35s cubic-bezier(0.16,1,0.3,1);
+    box-shadow:0 4px 32px rgba(62,214,192,0.2);
+  }
+  .btn-main:hover{
+    background:#4ee8d0;
+    transform:translateY(-2px);
+    box-shadow:0 8px 48px rgba(62,214,192,0.3);
+  }
+  .btn-outline{
+    padding:16px 40px;border-radius:10px;
+    font-family:'Outfit',sans-serif;font-weight:500;font-size:0.95rem;
+    cursor:pointer;letter-spacing:-0.01em;
+    background:transparent;
+    border:1px solid rgba(255,255,255,0.1);
+    color:var(--text-secondary);
+    transition:all 0.35s;
+  }
+  .btn-outline:hover{
+    border-color:rgba(62,214,192,0.25);
+    color:var(--text-primary);
+    background:rgba(62,214,192,0.04);
+  }
+
+  @keyframes fadeUp{
+    from{opacity:0;transform:translateY(24px)}
+    to{opacity:1;transform:translateY(0)}
+  }
+
+  /* ===== HORIZONTAL RULE ===== */
+  .hr-glow{
+    width:100%;height:1px;
+    background:linear-gradient(to right,transparent,rgba(62,214,192,0.15),transparent);
+  }
+
+  /* ===== MARQUEE ===== */
+  .marquee-wrap{
+    overflow:hidden;padding:40px 0;
+    border-top:1px solid var(--border-subtle);
+    border-bottom:1px solid var(--border-subtle);
+    position:relative;
+  }
+  .marquee-wrap::before,.marquee-wrap::after{
+    content:'';position:absolute;top:0;bottom:0;width:180px;z-index:2;pointer-events:none;
+  }
+  .marquee-wrap::before{left:0;background:linear-gradient(to right,var(--bg),transparent)}
+  .marquee-wrap::after{right:0;background:linear-gradient(to left,var(--bg),transparent)}
+  .marquee{
+    display:flex;gap:48px;width:max-content;
+    animation:scroll 28s linear infinite;
+  }
+  .marquee-item{
+    font-size:0.9rem;font-weight:500;
+    color:var(--text-muted);white-space:nowrap;
+    display:flex;align-items:center;gap:14px;
+    letter-spacing:0.01em;
+  }
+  .marquee-item .dot{
+    width:3px;height:3px;border-radius:50%;
+    background:var(--teal);opacity:0.4;
+  }
+  @keyframes scroll{0%{transform:translateX(0)}100%{transform:translateX(-50%)}}
+
+  /* ===== PHONE SECTION ===== */
+  .demo{
+    padding:120px 48px;
+    display:flex;align-items:center;justify-content:center;
+    gap:72px;max-width:1100px;margin:0 auto;
+  }
+  .phone{
+    width:290px;min-width:290px;
+    background:var(--surface);border-radius:36px;
+    border:1px solid var(--border-subtle);
+    padding:14px;position:relative;
+    box-shadow:0 40px 80px rgba(0,0,0,0.5),0 0 0 1px rgba(62,214,192,0.04);
+  }
+  .phone-notch{
+    width:100px;height:24px;background:var(--bg);
+    border-radius:0 0 14px 14px;margin:0 auto 14px;
+  }
+  .phone-screen{
+    background:var(--bg);border-radius:24px;
+    padding:20px 16px;min-height:460px;
+    display:flex;flex-direction:column;
+  }
+  .chat-head{
+    text-align:center;margin-bottom:20px;
+    padding-bottom:14px;border-bottom:1px solid var(--border-subtle);
+  }
+  .chat-head-name{font-weight:700;font-size:0.9rem;margin-bottom:2px}
+  .chat-head-sub{
+    font-family:'IBM Plex Mono',monospace;font-size:0.6rem;
+    color:var(--text-muted);text-transform:uppercase;letter-spacing:0.08em;
+  }
+  .msgs{flex:1;display:flex;flex-direction:column;gap:10px}
+  .m{
+    max-width:84%;padding:11px 14px;
+    border-radius:16px;font-size:0.78rem;line-height:1.55;
+    animation:msgPop 0.4s ease-out both;
+  }
+  .m-brand{
+    background:var(--surface-up);
+    border:1px solid var(--border-subtle);
+    align-self:flex-start;border-bottom-left-radius:4px;
+  }
+  .m-user{
+    background:rgba(62,214,192,0.1);
+    border:1px solid rgba(62,214,192,0.12);
+    align-self:flex-end;border-bottom-right-radius:4px;
+    color:var(--teal);font-weight:600;
+  }
+  .m-sys{
+    align-self:center;
+    background:rgba(62,214,192,0.05);
+    border:1px solid rgba(62,214,192,0.08);
+    color:var(--teal-dim);
+    font-family:'IBM Plex Mono',monospace;font-size:0.65rem;
+    text-align:center;border-radius:10px;
+  }
+  .m:nth-child(1){animation-delay:0.5s}
+  .m:nth-child(2){animation-delay:1.1s}
+  .m:nth-child(3){animation-delay:1.7s}
+  .m:nth-child(4){animation-delay:2.2s}
+  .m:nth-child(5){animation-delay:2.7s}
+  @keyframes msgPop{
+    from{opacity:0;transform:translateY(10px) scale(0.97)}
+    to{opacity:1;transform:translateY(0) scale(1)}
+  }
+
+  .demo-text{max-width:420px}
+  .demo-text .label{
+    font-family:'IBM Plex Mono',monospace;
+    font-size:0.68rem;text-transform:uppercase;
+    letter-spacing:0.1em;color:var(--teal);
+    margin-bottom:16px;
+  }
+  .demo-text h2{
+    font-size:clamp(1.8rem,3.5vw,2.6rem);
+    font-weight:800;letter-spacing:-0.035em;
+    line-height:1.08;margin-bottom:20px;
+  }
+  .demo-text p{
+    color:var(--text-secondary);font-size:0.95rem;
+    line-height:1.8;font-weight:300;
+  }
+
+  /* ===== FEATURES ===== */
+  .features{
+    padding:100px 48px;max-width:1100px;margin:0 auto;
+  }
+  .features-head{text-align:center;margin-bottom:56px}
+  .features-head .label{
+    font-family:'IBM Plex Mono',monospace;
+    font-size:0.68rem;text-transform:uppercase;
+    letter-spacing:0.1em;color:var(--teal);margin-bottom:14px;
+  }
+  .features-head h2{
+    font-size:clamp(1.8rem,3.5vw,2.6rem);
+    font-weight:800;letter-spacing:-0.035em;
+  }
+  .fgrid{
+    display:grid;grid-template-columns:repeat(3,1fr);gap:20px;
+  }
+  .fcard{
+    background:var(--surface);
+    border:1px solid var(--border-subtle);
+    border-radius:16px;padding:32px 28px;
+    transition:all 0.45s cubic-bezier(0.16,1,0.3,1);
+    position:relative;overflow:hidden;
+  }
+  .fcard::after{
+    content:'';position:absolute;top:0;left:0;right:0;height:1px;
+    background:linear-gradient(to right,transparent,var(--teal),transparent);
+    opacity:0;transition:opacity 0.4s;
+  }
+  .fcard:hover{
+    border-color:rgba(62,214,192,0.12);
+    transform:translateY(-3px);
+    box-shadow:0 16px 48px rgba(0,0,0,0.25);
+  }
+  .fcard:hover::after{opacity:0.4}
+  .fcard-icon{
+    width:40px;height:40px;border-radius:10px;
+    display:flex;align-items:center;justify-content:center;
+    margin-bottom:18px;font-size:1.1rem;
+    background:rgba(62,214,192,0.06);
+    border:1px solid rgba(62,214,192,0.1);
+  }
+  .fcard h3{
+    font-size:1rem;font-weight:700;
+    margin-bottom:10px;letter-spacing:-0.02em;
+  }
+  .fcard p{
+    color:var(--text-secondary);font-size:0.84rem;
+    line-height:1.7;font-weight:300;
+  }
+
+  /* ===== STATS ===== */
+  .stats{
+    padding:72px 48px;
+    border-top:1px solid var(--border-subtle);
+    border-bottom:1px solid var(--border-subtle);
+  }
+  .stats-inner{
+    max-width:900px;margin:0 auto;
+    display:grid;grid-template-columns:repeat(3,1fr);
+    gap:40px;text-align:center;
+  }
+  .stat h3{
+    font-size:clamp(2.5rem,5vw,3.5rem);
+    font-weight:900;letter-spacing:-0.04em;
+    color:var(--teal);margin-bottom:6px;
+  }
+  .stat p{
+    font-family:'IBM Plex Mono',monospace;
+    font-size:0.7rem;color:var(--text-muted);
+    text-transform:uppercase;letter-spacing:0.08em;
+  }
+
+  /* ===== CONTRACT ADDRESS ===== */
+  .ca-section{
+    padding:64px 48px;
+    text-align:center;
+  }
+  .ca-box{
+    max-width:680px;margin:0 auto;
+    background:var(--surface);
+    border:1px solid var(--border);
+    border-radius:16px;
+    padding:36px 40px;
+    position:relative;overflow:hidden;
+  }
+  .ca-box::before{
+    content:'';position:absolute;top:0;left:0;right:0;height:1px;
+    background:linear-gradient(to right,transparent,var(--teal),transparent);
+    opacity:0.3;
+  }
+  .ca-label{
+    font-family:'IBM Plex Mono',monospace;
+    font-size:0.65rem;text-transform:uppercase;
+    letter-spacing:0.12em;color:var(--teal);
+    margin-bottom:16px;
+    display:flex;align-items:center;justify-content:center;gap:8px;
+  }
+  .ca-label .chain-badge{
+    display:inline-flex;align-items:center;gap:5px;
+    padding:3px 10px;border-radius:100px;
+    background:rgba(62,214,192,0.08);
+    border:1px solid rgba(62,214,192,0.12);
+    font-size:0.6rem;color:var(--teal-dim);
+  }
+  .ca-addr-row{
+    display:flex;align-items:center;gap:12px;
+    justify-content:center;
+    background:var(--bg);
+    border:1px solid var(--border-subtle);
+    border-radius:10px;
+    padding:14px 20px;
+    margin-bottom:16px;
+  }
+  .ca-addr{
+    font-family:'IBM Plex Mono',monospace;
+    font-size:0.82rem;
+    color:var(--text-primary);
+    letter-spacing:0.01em;
+    word-break:break-all;
+    user-select:all;
+    flex:1;text-align:left;
+  }
+  .ca-addr .placeholder{color:var(--text-muted);font-style:italic;font-size:0.78rem}
+  .ca-copy{
+    padding:8px 16px;border-radius:8px;
+    background:rgba(62,214,192,0.1);
+    border:1px solid rgba(62,214,192,0.15);
+    color:var(--teal);font-family:'IBM Plex Mono',monospace;
+    font-size:0.7rem;cursor:pointer;
+    transition:all 0.3s;white-space:nowrap;
+    font-weight:500;
+  }
+  .ca-copy:hover{background:rgba(62,214,192,0.18)}
+  .ca-copy.copied{background:rgba(62,214,192,0.2);color:#fff}
+  .ca-note{
+    font-size:0.72rem;color:var(--text-muted);
+    font-family:'IBM Plex Mono',monospace;
+    letter-spacing:0.02em;
+  }
+
+  /* ===== CTA ===== */
+  .cta{
+    padding:160px 48px;text-align:center;position:relative;
+  }
+  .cta::before{
+    content:'';position:absolute;
+    width:min(720px,95vw);height:min(480px,55vh);border-radius:50%;
+    top:50%;left:50%;transform:translate(-50%,-50%);
+    background:radial-gradient(ellipse,rgba(62,214,192,0.1) 0%,rgba(62,214,192,0.02) 42%,transparent 68%);
+    pointer-events:none;
+  }
+  .cta h2{
+    font-size:clamp(2.2rem,5.5vw,4rem);
+    font-weight:800;letter-spacing:-0.04em;
+    line-height:1.05;margin-bottom:20px;
+    position:relative;z-index:2;
+  }
+  .cta h2 .em{color:var(--teal)}
+  .cta p{
+    color:var(--text-secondary);font-size:1.05rem;
+    margin-bottom:44px;font-weight:300;
+    position:relative;z-index:2;
+  }
+  .cta .btn-main{
+    position:relative;z-index:2;
+    padding:18px 52px;font-size:1rem;
+  }
+
+  /* ===== FOOTER ===== */
+  footer{
+    padding:40px 48px;border-top:1px solid var(--border-subtle);
+    display:flex;align-items:center;justify-content:space-between;
+  }
+  footer .fl{
+    font-family:'IBM Plex Mono',monospace;
+    font-size:0.68rem;color:var(--text-muted);letter-spacing:0.02em;
+  }
+  footer .fr{display:flex;gap:24px}
+  footer .fr a{
+    color:var(--text-muted);text-decoration:none;
+    font-family:'IBM Plex Mono',monospace;font-size:0.68rem;
+    transition:color 0.3s;letter-spacing:0.02em;
+  }
+  footer .fr a:hover{color:var(--teal)}
+  footer .fr a.x-social{
+    display:inline-flex;align-items:center;gap:8px;
+  }
+  footer .fr a.x-social img{
+    width:18px;height:18px;display:block;
+    opacity:0.75;transition:opacity 0.3s;
+  }
+  footer .fr a.x-social:hover img{opacity:1}
+
+  /* ===== SCROLL REVEAL ===== */
+  .reveal{
+    opacity:0;transform:translateY(32px);
+    transition:all 0.7s cubic-bezier(0.16,1,0.3,1);
+  }
+  .reveal.visible{opacity:1;transform:translateY(0)}
+
+  /* ===== RESPONSIVE ===== */
+  @media(max-width:900px){
+    nav{padding:16px 20px}
+    .nav-links{display:none}
+    .demo{flex-direction:column;padding:80px 20px;gap:40px}
+    .phone{min-width:auto;width:270px}
+    .fgrid{grid-template-columns:1fr}
+    .stats-inner{grid-template-columns:1fr;gap:28px}
+    .top-banner{padding:18px 16px 22px}
+    .top-banner img{max-height:clamp(44px,16vw,80px);max-width:92vw;border-radius:12px}
+    .nav-logo img{height:40px;width:40px}
+    .hero{padding:56px 20px 80px;min-height:auto}
+    .hero-actions{flex-direction:column;width:100%;max-width:280px}
+    .btn-main,.btn-outline{width:100%;text-align:center}
+    footer{flex-direction:column;gap:20px;text-align:center}
+  }
+</style>
+</head>
+<body>
+
+<!-- NAV -->
+<nav>
+  <div class="nav-logo">
+    <img src="logo.png" alt="ByIt" width="88" height="88" decoding="async">
+  </div>
+  <div class="nav-links">
+    <a href="#how">How it works</a>
+    <a href="#features">Features</a>
+    <a href="#cta">Early Access</a>
+  </div>
+  <button class="nav-cta" onclick="document.getElementById('cta').scrollIntoView({behavior:'smooth'})">Get Started</button>
+</nav>
+
+<!-- BANNER -->
+<section class="top-banner" aria-label="ByIt banner">
+  <div class="top-banner-inner">
+    <img src="banner.png" alt="ByIt" decoding="async" fetchpriority="high">
+  </div>
+</section>
+
+<!-- HERO -->
+<section class="hero">
+  <div class="hero-eyebrow">
+    <span class="dot"></span>
+    Crypto · Community · Utility
+  </div>
+  <h1>
+    <span class="line">Buy your favorites.</span>
+    <span class="line"><span class="em">Two texts.</span></span>
+  </h1>
+  <p class="hero-sub">
+    No apps. No carts. No checkout pages. Just send a message
+    and own what you love — instantly.
+  </p>
+  <div class="hero-actions">
+    <button class="btn-main" onclick="document.getElementById('cta').scrollIntoView({behavior:'smooth'})">Request Early Access</button>
+    <button class="btn-outline" onclick="document.getElementById('how').scrollIntoView({behavior:'smooth'})">See how it works</button>
+  </div>
+</section>
+
+<!-- CONTRACT ADDRESS -->
+<section class="ca-section">
+  <div class="ca-box reveal">
+    <div class="ca-label">
+      Contract Address
+      <span class="chain-badge">● BSC</span>
+    </div>
+    <div class="ca-addr-row">
+      <div class="ca-addr"><span class="placeholder">CA will be announced — stay tuned</span></div>
+      <button class="ca-copy" id="caCopyBtn" onclick="copyCA()" disabled>Copy</button>
+    </div>
+    <div class="ca-note">Do your own research · Not financial advice</div>
+  </div>
+</section>
+
+<!-- MARQUEE -->
+<div class="marquee-wrap">
+  <div class="marquee">
+    <span class="marquee-item">Zero Friction<span class="dot"></span></span>
+    <span class="marquee-item">Text-Native Commerce<span class="dot"></span></span>
+    <span class="marquee-item">Instant Checkout<span class="dot"></span></span>
+    <span class="marquee-item">Brand-Direct<span class="dot"></span></span>
+    <span class="marquee-item">Two Messages<span class="dot"></span></span>
+    <span class="marquee-item">No Apps Needed<span class="dot"></span></span>
+    <span class="marquee-item">Reply to Buy<span class="dot"></span></span>
+    <span class="marquee-item">Secure Payments<span class="dot"></span></span>
+    <span class="marquee-item">Zero Friction<span class="dot"></span></span>
+    <span class="marquee-item">Text-Native Commerce<span class="dot"></span></span>
+    <span class="marquee-item">Instant Checkout<span class="dot"></span></span>
+    <span class="marquee-item">Brand-Direct<span class="dot"></span></span>
+    <span class="marquee-item">Two Messages<span class="dot"></span></span>
+    <span class="marquee-item">No Apps Needed<span class="dot"></span></span>
+    <span class="marquee-item">Reply to Buy<span class="dot"></span></span>
+    <span class="marquee-item">Secure Payments<span class="dot"></span></span>
+  </div>
+</div>
+
+<!-- DEMO -->
+<section class="demo" id="how">
+  <div class="phone reveal">
+    <div class="phone-notch"></div>
+    <div class="phone-screen">
+      <div class="chat-head">
+        <div class="chat-head-name">ByIt × Nike</div>
+        <div class="chat-head-sub">Verified Brand · Encrypted</div>
+      </div>
+      <div class="msgs">
+        <div class="m m-brand">
+          New drop: Air Max Pulse "Cobalt Bliss" — $159.99. Limited to 200 pairs. Reply <strong>BUY</strong> to claim yours.
+        </div>
+        <div class="m m-user">BUY</div>
+        <div class="m m-brand">
+          Confirmed. Size 10 · Card •••• 4821 · Ships tomorrow.<br>Order #BYT-90247
+        </div>
+        <div class="m m-user">Nice</div>
+        <div class="m m-sys">
+          ✓ Payment processed · Confirmation sent
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="demo-text reveal">
+    <div class="label">How it works</div>
+    <h2>Commerce reduced<br>to its purest form</h2>
+    <p>
+      Brands text you curated drops. You reply with one word.
+      Payment, shipping, confirmation — handled instantly,
+      all inside your messages. No website. No app. No friction.
+    </p>
+  </div>
+</section>
+
+<div class="hr-glow"></div>
+
+<!-- FEATURES -->
+<section class="features" id="features">
+  <div class="features-head reveal">
+    <div class="label">Capabilities</div>
+    <h2>Built for what's next</h2>
+  </div>
+  <div class="fgrid">
+    <div class="fcard reveal">
+      <div class="fcard-icon">⚡</div>
+      <h3>Instant Transactions</h3>
+      <p>One-word replies trigger end-to-end purchase flows. Payment captured, order placed, confirmation delivered — seconds.</p>
+    </div>
+    <div class="fcard reveal">
+      <div class="fcard-icon">🎯</div>
+      <h3>Smart Curation</h3>
+      <p>Product matching learns your preferences. Every text you receive is tailored to you, never spam.</p>
+    </div>
+    <div class="fcard reveal">
+      <div class="fcard-icon">🔒</div>
+      <h3>Secure by Default</h3>
+      <p>Tokenized payments and encrypted messaging. Your data stays in the transaction pipeline, nowhere else.</p>
+    </div>
+    <div class="fcard reveal">
+      <div class="fcard-icon">📱</div>
+      <h3>Zero Downloads</h3>
+      <p>Works in your native messaging app. No installation, no accounts, no passwords to remember.</p>
+    </div>
+    <div class="fcard reveal">
+      <div class="fcard-icon">🏷️</div>
+      <h3>Brand Direct</h3>
+      <p>Connect directly with brands you love. Exclusive drops, early access, VIP pricing — all via text.</p>
+    </div>
+    <div class="fcard reveal">
+      <div class="fcard-icon">📈</div>
+      <h3>For Brands</h3>
+      <p>Higher conversion, clearer attribution, direct relationships. Text commerce outperforms every channel.</p>
+    </div>
+  </div>
+</section>
+
+<!-- STATS -->
+<section class="stats">
+  <div class="stats-inner reveal">
+    <div class="stat">
+      <h3>2</h3>
+      <p>Texts to purchase</p>
+    </div>
+    <div class="stat">
+      <h3>0</h3>
+      <p>Apps to download</p>
+    </div>
+    <div class="stat">
+      <h3>∞</h3>
+      <p>Brands to discover</p>
+    </div>
+  </div>
+</section>
+
+<!-- CTA -->
+<section class="cta" id="cta">
+  <h2 class="reveal">The future of buying<br>is <span class="em">invisible</span></h2>
+  <p class="reveal">Join the waitlist. Be first when ByIt launches.</p>
+  <button class="btn-main reveal">Get Early Access</button>
+</section>
+
+<!-- FOOTER -->
+<footer>
+  <div class="fl">© 2026 ByIt · byiteasy.com</div>
+  <div class="fr">
+    <a href="https://x.com/byiteasy" target="_blank" rel="noopener noreferrer" class="x-social" title="@byiteasy on X">
+      <img src="x.png" alt="">@byiteasy
+    </a>
+    <a href="#">Privacy</a>
+    <a href="#">Terms</a>
+  </div>
+</footer>
+
+<script>
+// scroll reveal
+const obs=new IntersectionObserver(es=>{
+  es.forEach(e=>{if(e.isIntersecting)e.target.classList.add('visible')});
+},{threshold:0.12});
+document.querySelectorAll('.reveal').forEach(el=>obs.observe(el));
+
+// CA copy — update the address here when ready
+const CONTRACT_ADDRESS = ''; // <-- PASTE YOUR CA HERE
+function copyCA(){
+  if(!CONTRACT_ADDRESS) return;
+  navigator.clipboard.writeText(CONTRACT_ADDRESS).then(()=>{
+    const btn=document.getElementById('caCopyBtn');
+    btn.textContent='Copied!';btn.classList.add('copied');
+    setTimeout(()=>{btn.textContent='Copy';btn.classList.remove('copied')},2000);
+  });
+}
+// Auto-fill when CA is set
+if(CONTRACT_ADDRESS){
+  document.querySelector('.ca-addr').textContent=CONTRACT_ADDRESS;
+  document.getElementById('caCopyBtn').disabled=false;
+}
+</script>
+
+</body>
+</html>
